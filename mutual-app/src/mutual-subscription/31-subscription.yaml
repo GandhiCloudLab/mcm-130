@@ -1,0 +1,27 @@
+---
+apiVersion: app.ibm.com/v1alpha1
+kind: Subscription
+metadata:
+  name: subscription-mcm-mutual-web
+  namespace: mcm-mutual-subscription-ns
+  labels:
+    app: mcm-mutual-application
+spec:
+  channel: mcm-mutual-channel-ns/mcm-mutual-channel
+  packageFilter:
+    version: ">=1.x"
+    labelSelector:
+      matchLabels:
+        app: mcm-mutual-application
+        subApp: web
+  placement:
+    placementRef:
+      name: mcm-mutual-web
+      kind: PlacementRule
+      group: app.ibm.com
+  overrides:
+  - clusterName: "/"
+    clusterOverrides:
+    - path: "metadata.namespace"
+      value: mcm-mutual-app-ns      
+  

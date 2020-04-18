@@ -1,0 +1,13 @@
+---
+apiVersion: app.ibm.com/v1alpha1
+kind: Channel
+metadata:
+  name: mcm-mutual-channel
+  namespace: mcm-mutual-channel-ns
+  labels:
+    app: mcm-mutual-application
+spec:
+  type: Namespace
+  pathname: mcm-mutual-channel-ns
+  sourceNamespaces:
+    - mcm-mutual-app-ns

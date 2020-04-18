@@ -1,0 +1,18 @@
+---
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: mcm-mutual
+  namespace: mcm-mutual-subscription-ns
+  labels:
+    app: mcm-mutual-application
+spec:
+  selector:
+    matchExpressions:
+    - key: app
+      operator: In
+      values:
+      - mcm-mutual-application
+  componentKinds:
+  - group: app.ibm.com
+    kind: Subscription

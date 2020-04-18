@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcm-mutual-channel-ns
+  labels:
+    app:  mcm-mutual-application
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcm-mutual-subscription-ns
+  labels:
+    app:  mcm-mutual-application
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcm-mutual-app-ns
+  labels:
+    app:  mcm-mutual-application

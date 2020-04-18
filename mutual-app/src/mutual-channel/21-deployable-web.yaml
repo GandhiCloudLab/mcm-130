@@ -1,0 +1,110 @@
+---
+# Deployable for Deployment
+apiVersion: app.ibm.com/v1alpha1
+kind: Deployable
+metadata:
+  name: mcm-mutual-deployable-deployment-web
+  namespace: mcm-mutual-channel-ns
+  annotations:
+    app.ibm.com/is-local-deployable: "false"  
+  labels:
+    app: mcm-mutual-application
+    subApp: web
+spec:
+  template:
+    kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: mcm-mutual-web
+      namespace: mcm-mutual-app-ns
+    spec:
+      selector:
+        matchLabels:
+          app: mcm-mutual-application
+          subname: web
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: mcm-mutual-application
+            subname: web
+        spec:
+          containers:
+            - name: container-web
+              image: "gandhicloud/g-app-store"
+              imagePullPolicy: Always
+              ports:
+                - name: http
+                  containerPort: 8080
+                  protocol: TCP
+                - name: https
+                  containerPort: 8082
+              env:
+              - name: GET_HOSTS_FROM
+                value: dns
+---
+# Deployable for Route
+apiVersion: app.ibm.com/v1alpha1
+kind: Deployable
+metadata:
+  name: mcm-mutual-deployable-service-web
+  namespace: mcm-mutual-channel-ns
+  annotations:
+    app.ibm.com/is-local-deployable: "false"  
+  labels:
+    app: mcm-mutual-application
+    subApp: web
+spec:
+  template:
+    kind: Service
+    apiVersion: v1
+    metadata:
+      name: mcm-mutual-web
+      namespace: mcm-mutual-app-ns
+      labels:
+        app: mcm-mutual-application
+        subname: web      
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/actuator/prometheus'
+        mcm.ibm.com/service-discovery: "{}"
+    spec:
+      type: NodePort
+      ports:
+        - name: my-http
+          port: 8080
+      selector:
+        app: mcm-mutual-application
+        subname: web
+---
+# Deployable for Service
+apiVersion: app.ibm.com/v1alpha1
+kind: Deployable
+metadata:
+  name: mcm-mutual-deployable-route-web
+  namespace: mcm-mutual-channel-ns
+  annotations:
+    app.ibm.com/is-local-deployable: "false"  
+  labels:
+    app: mcm-mutual-application
+    subApp: web
+spec:
+  template:
+    kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: mcm-mutual-web
+      namespace: mcm-mutual-app-ns
+      labels:
+        app: mcm-mutual-application
+        subname: web      
+    spec:
+      path: /
+      to:
+        kind: Service
+        name: mcm-mutual-web
+        weight: 100
+      port:
+        targetPort: my-http
+  
